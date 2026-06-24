@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T-Level Work Experience Hub</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=Space+Grotesk:wght=500;700&family=JetBrains+Mono:wght=400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body id="dashboard-global-body" class="bg-[#eaeded] text-[#111111] antialiased font-sans flex flex-col min-h-screen transition-all duration-200">
+
+    <header class="bg-[#131921] text-white text-xs sticky top-0 z-40 shadow-md">
+        <div class="px-4 py-2 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="flex items-baseline" onclick="loadModulePage('DEFAULT_DASHBOARD', 'nav-dash-btn')" class="cursor-pointer">
+                    <span class="text-xl font-bold text-[#ff9900] tracking-tight italic select-none cursor-pointer">amazon</span>
+                    <span class="text-sm font-semibold text-white ml-0.5 tracking-wide select-none cursor-pointer">placements</span>
+                </div>
+                
+                <div class="border border-slate-600 rounded px-2 py-0.5 text-[10px] bg-slate-800 font-mono tracking-wide">
+                    UK T-LEVEL
+                </div>
+
+                <div class="hidden md:block text-[11px] leading-tight text-slate-300">
+                    <p class="text-[10px] text-slate-400">Deliver Training To</p>
+                    <p id="header-student-name" class="font-bold text-white">Taylor Brooke</p>
+                </div>
+            </div>
+
+            <div class="flex-1 max-w-xl mx-2">
+                <div class="relative flex items-center h-8 bg-white rounded-md overflow-hidden">
+                    <button onclick="loadModulePage('./searchbar.html', 'nav-courses-btn')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 h-full border-r border-slate-200 font-medium text-[11px] cursor-pointer">All Courses</button>
+                    <input id="global-search-input" type="text" placeholder="Search compliance, health & safety regulations, professional conduct..." class="w-full text-slate-800 px-3 outline-none text-[11px]" onkeydown="if(event.key === 'Enter') triggerGlobalSearch()" />
+                    <button onclick="triggerGlobalSearch()" class="bg-[#ff9900] hover:bg-[#e48900] h-full px-5 text-slate-900 font-bold transition cursor-pointer">🔍</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-5 text-slate-200">
+                <button onclick="loadModulePage('./profile.html', 'nav-profile-btn')" id="nav-profile-btn" class="leading-tight text-left hidden sm:block hover:text-[#ff9900] transition group text-xs cursor-pointer bg-transparent border-0 outline-none">
+                    <p class="text-[10px] text-slate-400 group-hover:text-[#ff9900] transition">Hello, <span id="account-name-span">Taylor</span></p>
+                    <p class="font-bold text-white text-[11px] group-hover:text-[#ff9900] transition flex items-center gap-0.5">
+                        Account & Settings <span class="text-[9px] text-slate-400">▼</span>
+                    </p>
+                </button>
+                
+                <div class="leading-tight text-left hidden sm:block">
+                    <p class="text-[10px] text-slate-400">Returns & Diary</p>
+                    <p class="font-bold text-white text-[11px]"><span id="tracker-badge-count" class="text-[#ff9900]">4</span> Available Modules</p>
+                </div>
+
+                <button onclick="localStorage.removeItem('activeSession'); window.location.href='./index.html';" class="flex items-center gap-1 font-mono text-[11px] bg-slate-900 border border-slate-700 px-2.5 py-1 rounded hover:bg-red-950 hover:border-red-700 hover:text-red-400 transition cursor-pointer">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-[#232f3e] px-4 py-1.5 flex items-center justify-between text-[11px] font-medium text-slate-200 border-t border-slate-700">
+            <div id="master-nav-links" class="flex items-center gap-4 overflow-x-auto whitespace-nowrap">
+                <button onclick="loadModulePage('DEFAULT_DASHBOARD', 'nav-dash-btn')" id="nav-dash-btn" class="text-[#ff9900] font-bold pb-0.5 border-b-2 border-[#ff9900] cursor-pointer bg-transparent border-0">All Placements</button>
+                <button onclick="loadModulePage('./searchbar.html', 'nav-courses-btn')" id="nav-courses-btn" class="hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0">Today's Core Courses</button>
+                <button onclick="loadModulePage('./logbook.html', 'nav-log-btn')" id="nav-log-btn" class="hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0">Track Placement Orders (Logbook)</button>
+                <button onclick="loadModulePage('./chatbot.html', 'nav-chat-btn')" id="nav-chat-btn" class="hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0">Customer Service Chat (Aria Coach)</button>
+                <button onclick="loadModulePage('./accessibility.html', 'nav-access-btn')" id="nav-access-btn" class="hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0">Accessibility Options</button>
+                <button onclick="showAboutSection()" id="nav-about-btn" class="hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0">About T-Levels</button>
+            </div>
+            <div class="flex items-center gap-4 font-mono text-[10px] text-slate-300 whitespace-nowrap">
+                <div>XP Balance: <span id="dashboard-xp" class="text-[#ff9900] font-bold">458 XP</span></div>
+                <div>Streak: <span class="text-emerald-400 font-bold">5 days inside Prime Study</span></div>
+                <div class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 uppercase tracking-wider text-[9px] font-sans font-bold">
+                    Pathway: <span id="pathway-text">Digital Production</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-4">
+        
+        <main id="main-dashboard-content" class="block">
+            <div class="bg-[#143454] text-white rounded-md p-6 shadow-sm border border-slate-700 relative overflow-hidden">
+                <div class="max-w-2xl">
+                    <span class="bg-[#e47911] text-white font-bold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded">
+                        Diary Progress Deals
+                    </span>
+                    <h2 class="text-xl md:text-2xl font-bold mt-2 font-display tracking-tight">
+                        Complete and Log your 315-hour Industry Placement
+                    </h2>
+                    <p class="text-slate-300 text-xs mt-1.5 leading-relaxed max-w-xl">
+                        T-Level Placements require 100% attendance and high-scoring diary entries aligning with UK government criteria. Use the interactive modules to study, then log reflection entries for reviews.
+                    </p>
+
+                    <div class="mt-6 bg-slate-900/50 rounded-lg p-4 border border-white/10 max-w-lg">
+                        <div class="flex justify-between items-center text-xs mb-1.5 font-medium">
+                            <span class="text-[#ff9900] font-bold">Shipping Status: Progress Updated</span>
+                            <span class="text-slate-300"><span id="hours-logged">15.5</span> hours of 315 hours logged</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                            <div id="hours-progress-bar" class="bg-[#ff9900] h-full rounded-full transition-all duration-500" style="width: 5%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 bg-white border border-slate-200 rounded p-3 text-xs text-slate-700 shadow-xs flex items-center gap-1">
+                <span>Showing available interactive placement manuals •</span>
+                <span onclick="loadModulePage('./searchbar.html', 'nav-courses-btn')" class="text-[#c45500] font-bold hover:underline cursor-pointer">Eligible for Free Instant Retrieval Revision</span>
+            </div>
+        </main>
+
+        <div id="workspace-iframe-container" class="hidden bg-white w-full rounded-xl overflow-hidden min-h-[660px] shadow-sm border border-slate-200">
+            <iframe id="workspace-viewport" src="" class="w-full min-h-[660px] border-0 rounded-xl bg-white"></iframe>
+        </div>
+
+        <main id="about-tlevels-content" class="hidden">
+            <div class="bg-white p-6 rounded-md border border-slate-200 shadow-sm min-h-[300px]">
+                <span class="bg-blue-600 text-white font-bold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded font-mono">
+                    Information Registry Desk
+                </span>
+                <h2 class="text-xl md:text-2xl font-bold mt-2 font-display tracking-tight text-slate-900 border-b pb-3 mb-4">
+                    UK Technical Qualification Framework Architecture
+                </h2>
+                <div class="space-y-4 text-xs text-slate-600 leading-relaxed max-w-3xl">
+                    <p>T-Levels are 2-year courses launched across England following GCSE cycles, engineered as direct equivalents to 3 distinct A-Level parameters. They fuse vocational classroom technical criteria with extended contextual workplace integrations.</p>
+                    <p class="bg-slate-50 border-l-4 border-[#ff9900] p-3 text-slate-700 italic">
+                        "Placements last a minimum duration of 315 hours (approx. 45 operational working shifts) to safely authenticate and satisfy DfE credential criteria targets."
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-[#232f3e] text-slate-300 text-xs mt-12 border-t-4 border-[#131921]">
+        <div class="max-w-4xl mx-auto py-6 px-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-slate-400 font-medium">
+            <button onclick="loadModulePage('./searchbar.html', 'nav-courses-btn')" class="hover:underline cursor-pointer bg-transparent border-0 text-slate-400">Interactive Courses Desk</button>
+            <button onclick="loadModulePage('./logbook.html', 'nav-log-btn')" class="hover:underline cursor-pointer bg-transparent border-0 text-slate-400">Track Placement Orders (Logbook)</button>
+            <button onclick="loadModulePage('./chatbot.html', 'nav-chat-btn')" class="hover:underline cursor-pointer bg-transparent border-0 text-slate-400">Aria Coach Help Assistance</button>
+            <button onclick="showAboutSection()" class="hover:underline font-bold text-white cursor-pointer bg-transparent border-0">About T-Levels Hub</button>
+        </div>
+        
+        <div class="bg-[#131921] py-8 px-4 text-center text-[11px] text-slate-400 border-t border-slate-700">
+            <div class="max-w-3xl mx-auto space-y-3">
+                <p class="font-bold text-slate-300 text-xs tracking-wide">
+                    UK Level-3 Technical Qualifications (T-Levels) & Placements Tracker Registry
+                </p>
+                <p class="leading-relaxed text-slate-400">
+                    Under UK Department for Education directives, structural logging operations verify active placement validation criteria matrices prior to final college entry submission reviews.
+                </p>
+                <hr class="border-slate-800 w-1/2 mx-auto my-4" />
+                <p class="font-mono text-[10px] text-slate-500">
+                    © 2026, AmazonPlacements UK. All settings synchronized via local state keys.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', initializeMasterDeck);
+
+        // Periodically refresh data changes from nested subframe environments
+        window.addEventListener('message', function(event) {
+            initializeMasterDeck();
+        });
+
+        function initializeMasterDeck() {
+            // Pull session metadata records
+            const activeUser = localStorage.getItem('activeSession') || 'Taylor Brooke';
+            const activePathway = localStorage.getItem('activePathway') || 'Digital Production, Design & Development';
+            
+            document.getElementById('header-student-name').textContent = activeUser;
+            document.getElementById('account-name-span').textContent = activeUser.split(' ')[0];
+            document.getElementById('pathway-text').textContent = activePathway;
+
+            // Compute dynamic aggregate hours calculated across nested pages
+            let calculatedHours = 15.5;
+            const customLogs = localStorage.getItem(`logs_${activeUser}`);
+            if (customLogs) {
+                const parsed = JSON.parse(customLogs);
+                const customSum = parsed.reduce((sum, item) => sum + parseFloat(item.hours || 0), 0);
+                calculatedHours = 15.5 + customSum;
+            }
+            
+            document.getElementById('hours-logged').textContent = calculatedHours.toFixed(1);
+            
+            // Recompute metric percentage status matching progress track constraints
+            const progressPercent = Math.min((calculatedHours / 315) * 100, 100).toFixed(1);
+            document.getElementById('hours-progress-bar').style.width = `${progressPercent}%`;
+
+            // Broadcast look and feel accessibility configs down to dashboard context level
+            applyGlobalAccessibilityStateTokens();
+        }
+
+        // Central Multi-Doc Core Router Engine
+        function loadModulePage(url, activeBtnId) {
+            const dashSection = document.getElementById('main-dashboard-content');
+            const iframeContainer = document.getElementById('workspace-iframe-container');
+            const iframeViewport = document.getElementById('workspace-viewport');
+            const aboutSection = document.getElementById('about-tlevels-content');
+
+            // Purge highlight styling states across tracking link lists
+            const navButtons = document.querySelectorAll('#master-nav-links button, #nav-profile-btn');
+            navButtons.forEach(btn => {
+                if (btn.id === 'nav-profile-btn') {
+                    btn.className = "leading-tight text-left hidden sm:block hover:text-[#ff9900] transition group text-xs cursor-pointer bg-transparent border-0 outline-none";
+                } else {
+                    btn.className = "hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0";
+                }
+            });
+
+            // Apply targeted visibility tokens matching input paths
+            if (activeBtnId) {
+                const targetBtn = document.getElementById(activeBtnId);
+                if (targetBtn && activeBtnId !== 'nav-profile-btn') {
+                    targetBtn.className = "text-[#ff9900] font-bold pb-0.5 border-b-2 border-[#ff9900] cursor-pointer bg-transparent border-0";
+                }
+            }
+
+            aboutSection.classList.add('hidden');
+            
+            if (url === 'DEFAULT_DASHBOARD') {
+                iframeContainer.classList.add('hidden');
+                dashSection.classList.remove('hidden');
+                initializeMasterDeck(); 
+            } else {
+                dashSection.classList.add('hidden');
+                iframeContainer.classList.remove('hidden');
+                iframeViewport.src = url;
+            }
+        }
+
+        function showAboutSection() {
+            document.getElementById('main-dashboard-content').classList.add('hidden');
+            document.getElementById('workspace-iframe-container').classList.add('hidden');
+            document.getElementById('about-tlevels-content').classList.remove('hidden');
+
+            const navButtons = document.querySelectorAll('#master-nav-links button, #nav-profile-btn');
+            navButtons.forEach(btn => {
+                btn.className = (btn.id === 'nav-profile-btn') ? 
+                "leading-tight text-left hidden sm:block hover:text-[#ff9900] transition group text-xs cursor-pointer bg-transparent border-0 outline-none" : 
+                "hover:text-[#ff9900] transition cursor-pointer bg-transparent border-0";
+            });
+            document.getElementById('nav-about-btn').className = "text-[#ff9900] font-bold pb-0.5 border-b-2 border-[#ff9900] cursor-pointer bg-transparent border-0";
+        }
+
+        // Global Navigation Search Bar Interceptor
+        function triggerGlobalSearch() {
+            const searchVal = document.getElementById('global-search-input').value.trim();
+            // Cache text criteria so searchbar.html can pick up query conditions on initialization loop
+            localStorage.setItem('active_global_query', searchVal);
+            loadModulePage('./searchbar.html', 'nav-courses-btn');
+        }
+
+        // Global Sync Accessibility State Layer Hooks
+        function applyGlobalAccessibilityStateTokens() {
+            const body = document.getElementById('dashboard-global-body');
+            const textScale = localStorage.getItem('access_text_scale') || 'small';
+            const contrastMode = localStorage.getItem('access_contrast_mode') === 'true';
+
+            body.classList.remove('text-sm', 'text-base', 'text-lg');
+            if (textScale === 'large') body.classList.add('text-base');
+            else if (textScale === 'xlarge') body.classList.add('text-lg');
+            else body.classList.add('text-sm');
+
+            if (contrastMode) {
+                body.style.filter = "contrast(1.15) saturate(1.05)";
+            } else {
+                body.style.filter = "none";
+            }
+        }
+    </script>
+</body>
+</html>

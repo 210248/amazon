@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T-Level Hub - Accessibility Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=Space+Grotesk:wght=500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body id="access-body" class="bg-[#eaeded] text-[#111111] antialiased font-sans p-6 transition-all duration-200">
+
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-md">
+        <span class="bg-blue-600 text-white font-bold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded font-mono">
+            Portal Control Station
+        </span>
+        <h2 class="text-xl font-bold mt-2 font-display tracking-tight text-slate-900 border-b pb-3 mb-4">
+            Accessibility Options
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Adjust Scaling Text Size</label>
+                <div class="flex gap-2">
+                    <button onclick="setBaseTextScale('small')" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-slate-50 transition">Standard</button>
+                    <button onclick="setBaseTextScale('large')" class="px-4 py-2 border rounded-lg text-sm font-bold hover:bg-slate-50 transition">Large text</button>
+                    <button onclick="setBaseTextScale('xlarge')" class="px-4 py-2 border rounded-lg text-base font-extrabold hover:bg-slate-50 transition">Extra Large</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t pt-4">
+                <div>
+                    <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">High Contrast Mode</p>
+                    <p class="text-[11px] text-slate-500">Inverts interface layers to assist optimal visibility.</p>
+                </div>
+                <button id="contrast-toggle-btn" onclick="toggleContrastRenderingMode()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-4 py-2 rounded-lg transition">
+                    Enable Mode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Apply values saved in cache on startup
+            const savedScale = localStorage.getItem('access_text_scale') || 'small';
+            const savedContrast = localStorage.getItem('access_contrast_mode') === 'true';
+
+            setBaseTextScale(savedScale);
+            if (savedContrast) renderContrastStyles(true);
+        });
+
+        function setBaseTextScale(scale) {
+            const body = document.getElementById('access-body');
+            // Reset text sizes classes
+            body.classList.remove('text-sm', 'text-base', 'text-lg');
+
+            if (scale === 'large') {
+                body.classList.add('text-base');
+            } else if (scale === 'xlarge') {
+                body.classList.add('text-lg');
+            } else {
+                body.classList.add('text-sm');
+            }
+            localStorage.setItem('access_text_scale', scale);
+        }
+
+        function toggleContrastRenderingMode() {
+            const isCurrentlyActive = localStorage.getItem('access_contrast_mode') === 'true';
+            renderContrastStyles(!isCurrentlyActive);
+        }
+
+        function renderContrastStyles(activate) {
+            const body = document.getElementById('access-body');
+            const button = document.getElementById('contrast-toggle-btn');
+
+            if (activate) {
+                body.classList.replace('bg-[#eaeded]', 'bg-black');
+                body.classList.replace('text-[#111111]', 'text-yellow-400');
+                button.textContent = "Disable Mode";
+                button.className = "bg-yellow-400 text-black text-xs font-bold px-4 py-2 rounded-lg transition";
+                localStorage.setItem('access_contrast_mode', 'true');
+            } else {
+                body.className = body.className.replace('bg-black', 'bg-[#eaeded]').replace('text-yellow-400', 'text-[#111111]');
+                button.textContent = "Enable Mode";
+                button.className = "bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-4 py-2 rounded-lg transition";
+                localStorage.setItem('access_contrast_mode', 'false');
+            }
+        }
+    </script>
+</body>
+</html>

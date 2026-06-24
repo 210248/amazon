@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T-Level Hub - Aria Chat Coach</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=Space+Grotesk:wght=500;700&family=JetBrains+Mono:wght=400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#eaeded] text-[#111111] antialiased font-sans p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden flex flex-col h-[600px]">
+        
+        <div class="bg-[#232f3e] p-4 text-white flex items-center justify-between border-b border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#ff9900] flex items-center justify-center font-bold text-slate-950 font-display">
+                    A
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight">Customer Service Chat (Aria Coach)</h1>
+                    <p class="text-[10px] text-emerald-400 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse"></span>
+                        T-Level Advisor Portal Active
+                    </p>
+                </div>
+            </div>
+            <button onclick="clearChatHistory()" class="text-[10px] bg-slate-800 hover:bg-red-950 hover:text-red-400 border border-slate-700 px-2 py-1 rounded font-mono transition cursor-pointer">
+                Clear Logs
+            </button>
+        </div>
+
+        <div id="chat-messages-box" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
+            </div>
+
+        <div class="p-3 bg-white border-t border-slate-100 flex gap-2">
+            <input id="chat-input" type="text" onkeydown="if(event.key === 'Enter') dispatchUserMessage()" placeholder="Ask about 'hours', 'rules', 'XP', 'industry placements'..." class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#ff9900]" />
+            <button onclick="dispatchUserMessage()" class="bg-[#ff9900] hover:bg-[#e48900] text-slate-900 font-bold px-4 rounded-xl text-xs transition cursor-pointer">
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', initializeChatWorkspace);
+
+        function getStudentName() {
+            const sessionName = localStorage.getItem('activeSession') || 'Taylor Brooke';
+            return sessionName.split(' ')[0];
+        }
+
+        function initializeChatWorkspace() {
+            const username = localStorage.getItem('activeSession') || 'default_user';
+            const cacheKey = `chat_history_${username}`;
+            const existingHistory = localStorage.getItem(cacheKey);
+
+            if (existingHistory) {
+                document.getElementById('chat-messages-box').innerHTML = existingHistory;
+                scrollToBottom();
+            } else {
+                // Drop initial welcoming phrase greeting the matched user context
+                appendChatBubble(`Hello ${getStudentName()}! I'm Aria, your industry placement diagnostic coach. Ask me anything about your hours requirement, logbook submissions, or placement policies!`, 'bot');
+            }
+        }
+
+        function appendChatBubble(text, sender) {
+            const box = document.getElementById('chat-messages-box');
+            const wrapper = document.createElement('div');
+            
+            if (sender === 'user') {
+                wrapper.className = "flex justify-end";
+                wrapper.innerHTML = `
+                    <div class="bg-slate-800 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-xs font-medium">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                wrapper.className = "flex justify-start";
+                wrapper.innerHTML = `
+                    <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[80%] shadow-xs text-slate-800 leading-relaxed">
+                        ${text}
+                    </div>
+                `;
+            }
+
+            box.appendChild(wrapper);
+            scrollToBottom();
+            
+            // Sync log block to cache memory
+            const username = localStorage.getItem('activeSession') || 'default_user';
+            localStorage.setItem(`chat_history_${username}`, box.innerHTML);
+        }
+
+        function dispatchUserMessage() {
+            const input = document.getElementById('chat-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            appendChatBubble(query, 'user');
+            input.value = '';
+
+            // Run simple simulated match response after a brief calculation lag
+            setTimeout(() => {
+                const response = matchBotResponse(query.toLowerCase());
+                appendChatBubble(response, 'bot');
+            }, 600);
+        }
+
+        function matchBotResponse(msg) {
+            if (msg.includes('hour') || msg.includes('duration') || msg.includes('time')) {
+                return `Under UK Department for Education guidelines, your T-Level Industry Placement must last at least <strong>315 hours</strong> (approximately 45 days) and up to 450 hours total.`;
+            }
+            if (msg.includes('xp') || msg.includes('points') || msg.includes('streak')) {
+                return `You earn <strong>XP</strong> and grow your study streak every time you commit entries to your Logbook and complete training manuals!`;
+            }
+            if (msg.includes('rule') || msg.includes('law') || msg.includes('guideline') || msg.includes('health')) {
+                return `Placements conform tightly to the Health and Safety at Work Act (1974) and active GDPR data frameworks. Always ensure your host employer covers your induction safety brief!`;
+            }
+            if (msg.includes('logbook') || msg.includes('diary') || msg.includes('submit')) {
+                return `You can use the <strong>Track Placement Orders (Logbook)</strong> tab to quickly log hours and store critical evidence logs needed for college review.`;
+            }
+            return `Interesting query, ${getStudentName()}! I am currently operating in standalone simulation mode. Try asking me about 'hours', 'logbook rules', or 'how to earn XP'!`;
+        }
+
+        function scrollToBottom() {
+            const box = document.getElementById('chat-messages-box');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function clearChatHistory() {
+            if (confirm("Clear live diagnostic chat storage?")) {
+                const username = localStorage.getItem('activeSession') || 'default_user';
+                localStorage.removeItem(`chat_history_${username}`);
+                document.getElementById('chat-messages-box').innerHTML = '';
+                appendChatBubble(`Logs cleared. How can I assist you with your T-Level query today, ${getStudentName()}?`, 'bot');
+            }
+        }
+    </script>
+</body>
+</html>

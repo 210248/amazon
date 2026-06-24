@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T-Level Hub - Placement Logbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=Space+Grotesk:wght=500;700&family=JetBrains+Mono:wght=400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#eaeded] text-[#111111] antialiased font-sans p-6">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="bg-[#143454] text-white p-6 rounded-xl border border-slate-700 shadow-sm">
+            <span class="bg-[#e47911] text-white font-bold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded">
+                Data Registry Port
+            </span>
+            <h1 class="text-xl md:text-2xl font-bold mt-1 font-display tracking-tight">Track Placement Orders (Logbook)</h1>
+            <p class="text-slate-300 text-xs mt-1">Log your shifts and reflections directly into local persistent cache files.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Log New Entry</h2>
+                
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Date of Shift</label>
+                    <input id="log-date" type="date" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-[#ff9900]" />
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Hours Completed</label>
+                    <input id="log-hours" type="number" step="0.5" min="0" max="12" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-[#ff9900]" placeholder="e.g. 7.5" />
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase">Daily Reflection Summary</label>
+                    <textarea id="log-reflection" rows="4" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-[#ff9900]" placeholder="What tasks or frameworks did you implement today?"></textarea>
+                </div>
+
+                <button onclick="addLogEntry()" class="w-full bg-[#ff9900] hover:bg-[#e48900] text-slate-900 py-2 rounded-lg text-xs font-bold transition tracking-wide cursor-pointer">
+                    Commit Entry to Registry
+                </button>
+            </div>
+
+            <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Log History Database</h2>
+                    <span id="total-badge" class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[10px] font-mono font-bold">Total: 0 hrs</span>
+                </div>
+
+                <div id="log-list-container" class="space-y-2 max-h-[360px] overflow-y-auto pr-1 text-xs">
+                    <p class="text-slate-400 text-center italic py-8">No work placement logs registered in local database yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load existing logs on startup
+        document.addEventListener('DOMContentLoaded', loadLogsFromCache);
+
+        function getActiveUser() {
+            return localStorage.getItem('activeSession') || 'default_student';
+        }
+
+        function addLogEntry() {
+            const dateVal = document.getElementById('log-date').value;
+            const hoursVal = parseFloat(document.getElementById('log-hours').value);
+            const reflectVal = document.getElementById('log-reflection').value.trim();
+
+            if (!dateVal || isNaN(hoursVal) || !reflectVal) {
+                alert("Please satisfy all field parameters before committing logs.");
+                return;
+            }
+
+            const username = getActiveUser();
+            const storageKey = `logs_${username}`;
+            
+            // Fetch array or build a new one
+            const records = JSON.parse(localStorage.getItem(storageKey)) || [];
+            
+            // Push structured map entry
+            records.push({
+                id: Date.now(),
+                date: dateVal,
+                hours: hoursVal,
+                reflection: reflectVal
+            });
+
+            localStorage.setItem(storageKey, JSON.stringify(records));
+
+            // Clean inputs and reload layout list
+            document.getElementById('log-date').value = '';
+            document.getElementById('log-hours').value = '';
+            document.getElementById('log-reflection').value = '';
+            
+            loadLogsFromCache();
+        }
+
+        function loadLogsFromCache() {
+            const username = getActiveUser();
+            const records = JSON.parse(localStorage.getItem(`logs_${username}`)) || [];
+            const container = document.getElementById('log-list-container');
+            const totalBadge = document.getElementById('total-badge');
+
+            if (records.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-center italic py-8">No work placement logs registered in local database yet.</p>`;
+                totalBadge.textContent = "Total: 0 hrs";
+                return;
+            }
+
+            // Sort entries descending by date string
+            records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let totalHours = 0;
+            container.innerHTML = '';
+
+            records.forEach(item => {
+                totalHours += item.hours;
+                
+                const card = document.createElement('div');
+                card.className = "p-3 border border-slate-100 rounded-lg bg-slate-50 relative group";
+                card.innerHTML = `
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="font-bold text-slate-700">${item.date}</span>
+                        <span class="bg-blue-100 text-blue-800 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded">${item.hours} Hours</span>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">${item.reflection}</p>
+                `;
+                container.appendChild(card);
+            });
+
+            totalBadge.textContent = `Total: ${totalHours} hrs`;
+            
+            // Mirror total aggregate directly to master cache string for dashboard access
+            localStorage.setItem(`total_hours_${username}`, totalHours);
+        }
+    </script>
+</body>
+</html>
